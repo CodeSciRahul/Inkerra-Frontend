@@ -17,7 +17,7 @@ const Page = ({ params }: { params: { user_id: number; blog_id: number } }) => {
     const access_token = localStorage.getItem("access_token");
     const parsedToken = access_token ? JSON.parse(access_token) : null;
     setToken(parsedToken);
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     const getPost = async () => {
@@ -43,7 +43,7 @@ const Page = ({ params }: { params: { user_id: number; blog_id: number } }) => {
       }
     };
     getPost();
-  }, [params.blog_id, params.user_id, token]);
+  }, [params.blog_id, params.user_id, token, router]);
 
   return (
     <>

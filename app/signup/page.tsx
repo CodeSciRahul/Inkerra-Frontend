@@ -134,7 +134,8 @@ const SignUpForm: React.FC = () => {
             {isSubmitting ? "Submitting..." : "Sign Up"}
           </Button>
           <div className="mt-4">
-            don't have an account? <Link href="/login" className="text-[#164674] font-semibold underline">login</Link>
+          <p> have an account?</p>
+          <Link href="/login" className="text-[#164674] font-semibold underline">login</Link>
           </div>
         </form>
       </Form>
