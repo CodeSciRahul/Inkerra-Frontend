@@ -1,5 +1,4 @@
 "use client";
-import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -8,28 +7,21 @@ import { FaUser, FaHome } from "react-icons/fa";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaSignsPost } from "react-icons/fa6";
 import { LuArrowLeftToLine, LuArrowRightFromLine } from "react-icons/lu";
-import { Popover, PopoverTrigger, PopoverContent } from "../components/ui/popover";
-
-
-interface User {
-  email: string;
-  id: number;
-  userName: string;
-}
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "../components/ui/popover";
+import { useAppSelector, useAppDispatch } from "@/redux/hooks";
+import { removeUserInfo } from "@/redux/features/authSlice";
+import { useEffect } from "react";
+import { hydrateUserInfoFromLocalStorage } from "@/redux/features/authSlice";
 
 export const Header = () => {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  const [isLogin, setIsLogin] = useState<boolean>(false);
-
-  useEffect(() => {
-    const data = localStorage.getItem("user");
-    const userdata = data ? JSON.parse(data) : null;
-    if (userdata) {
-      setUser(userdata);
-      setIsLogin(true); 
-    }
-  }, []); 
+  const dispatch = useAppDispatch();
+  const token = useAppSelector((state) => state.auth.data);
+  const user = useAppSelector((state) => state.auth.data);
 
   const handleCreatePost = (user_id: number | undefined) => {
     if (user_id) {
@@ -37,17 +29,20 @@ export const Header = () => {
     }
   };
 
+  useEffect(() => {
+    dispatch(hydrateUserInfoFromLocalStorage());
+
+  }, [router,dispatch])
+  
+
   const handleLogOut = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("user");
-    setIsLogin(false);
-    setUser(null);
+    dispatch(removeUserInfo());
     toast.success("Logout successfully", { duration: 5000 });
     router.push("/");
   };
 
   const handleProfile = (user_id: number | undefined) => {
-      router.push(`/user-profile/${user_id}`);
+    router.push(`/user-profile/${user_id}`);
   };
 
   return (
@@ -66,23 +61,15 @@ export const Header = () => {
             <FaHome />
             Home
           </Button>
-          <Button
-            variant="link"
-            className="text-white flex gap-2"
-            onClick={() => handleCreatePost(user?.id)}
-          >
-            <FaSignsPost />
-            Create Post
-          </Button>
-          {isLogin ? (
+          {token ? (
             <>
               <Button
                 variant="link"
                 className="text-white flex gap-2"
-                onClick={handleLogOut}
+                onClick={() => handleCreatePost(user?.id)}
               >
-                <LuArrowLeftToLine />
-                Logout
+                <FaSignsPost />
+                Create Post
               </Button>
               <Button
                 variant="link"
@@ -91,6 +78,15 @@ export const Header = () => {
               >
                 <FaUser />
                 Profile
+              </Button>
+
+              <Button
+                variant="link"
+                className="text-white flex gap-2"
+                onClick={handleLogOut}
+              >
+                <LuArrowLeftToLine />
+                Logout
               </Button>
             </>
           ) : (
@@ -123,23 +119,15 @@ export const Header = () => {
                   <FaHome />
                   Home
                 </Button>
-                <Button
-                  variant="link"
-                  className="flex gap-2"
-                  onClick={() => handleCreatePost(user?.id)}
-                >
-                  <FaSignsPost />
-                  Create Post
-                </Button>
-                {isLogin ? (
+                {token ? (
                   <>
                     <Button
                       variant="link"
-                      onClick={handleLogOut}
                       className="flex gap-2"
+                      onClick={() => handleCreatePost(user?.id)}
                     >
-                      <LuArrowLeftToLine />
-                      Logout
+                      <FaSignsPost />
+                      Create Post
                     </Button>
                     <Button
                       variant="link"
@@ -148,6 +136,14 @@ export const Header = () => {
                     >
                       <FaUser />
                       Profile
+                    </Button>
+                    <Button
+                      variant="link"
+                      onClick={handleLogOut}
+                      className="flex gap-2"
+                    >
+                      <LuArrowLeftToLine />
+                      Logout
                     </Button>
                   </>
                 ) : (

@@ -13,10 +13,14 @@ import {
 } from "../../components/ui/form";
 import { Input } from "../../components/ui/input"
 import { Button } from "../../components/ui/button";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAppDispatch } from "@/redux/hooks";
+import { setUserInfo,hydrateUserInfoFromLocalStorage } from "@/redux/features/authSlice";
+import type { loginResType } from "@/interfaceType/authType";
+
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email" }),
@@ -31,6 +35,7 @@ const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 const LoginForm: React.FC = () => {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const dispatch = useAppDispatch()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -39,8 +44,12 @@ const LoginForm: React.FC = () => {
     },
   });
 
+  useEffect(() => {
+    hydrateUserInfoFromLocalStorage();
+  }, [dispatch])
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsSubmitting(!isSubmitting)
+    setIsSubmitting(true)
     try {
       const response = await fetch(`${baseURL}/api/auth/login`, {
         method: "POST",
@@ -49,20 +58,20 @@ const LoginForm: React.FC = () => {
         },
         body: JSON.stringify(values),
       });
-      const userData = await response.json();
-      const { token, data } = userData;
+      const userData:loginResType = await response.json();
+      console.log(userData);
       if (!response.ok) {
-        setIsSubmitting(!isSubmitting)
+        setIsSubmitting(false)
         return toast.error(userData?.message, { duration: 5000 });
       }
-      setIsSubmitting(!isSubmitting)
-      localStorage.setItem("access_token", JSON.stringify(token));
-      localStorage.setItem("user", JSON.stringify(data));
+      setIsSubmitting(false)
+      dispatch(setUserInfo(userData));
+
 
       toast.success(userData?.message, { duration: 5000 });
       router.push("/");
     } catch (error) {
-      console.error("from catch", error);
+      toast.error(`${error}`)
     }
   }
 
@@ -82,6 +91,7 @@ const LoginForm: React.FC = () => {
                   <Input
                     type="email"
                     placeholder="Enter your email"
+                    autoComplete="true"
                     {...field}
                   />
                 </FormControl>
@@ -101,6 +111,7 @@ const LoginForm: React.FC = () => {
                   <Input
                     type="password"
                     placeholder="Enter your password"
+                    autoComplete="true"
                     {...field}
                   />
                 </FormControl>
@@ -110,10 +121,10 @@ const LoginForm: React.FC = () => {
           />
 
           <Button type="submit" className="w-full bg-[#164674] hover:bg[#164674] hover:opacity-90" disabled={isSubmitting}>
-            {isSubmitting ? "Submitting..." : "Login"}
+            {isSubmitting ? "Logining..." : "Login"}
           </Button>
-          <div className="mt-4">
-          <p>Don&apos;t have an account?</p> <Link href="/signup" className="text-[#164674] font-semibold underline">signup</Link>
+          <div className="mt-4 flex">
+          <p>Don&apos;t have an account?</p> <Link href="/signup" className="text-[#164674] font-semibold underline ml-1">signup</Link>
           </div>
         </form>
       </Form>

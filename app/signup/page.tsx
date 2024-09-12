@@ -14,8 +14,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import Link from "next/link";
+import { useAppDispatch } from "@/redux/hooks";
+import { setUserInfo,hydrateUserInfoFromLocalStorage } from "@/redux/features/authSlice";
+import type { signupResType } from "@/interfaceType/authType";
+
 
 const formSchema = z.object({
   userName: z
@@ -32,6 +36,12 @@ const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
 const SignUpForm: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    hydrateUserInfoFromLocalStorage();
+  }, [dispatch])
+  
 
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -45,7 +55,7 @@ const SignUpForm: React.FC = () => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      setIsSubmitting(!isSubmitting)
+      setIsSubmitting(true)
       const response = await fetch(
         `${baseURL}/api/auth/createAccount`,
         {
@@ -56,22 +66,21 @@ const SignUpForm: React.FC = () => {
           body: JSON.stringify(values),
         }
       );
-      const userData = await response.json();
-      const { token, data } = userData;
+      const userData:signupResType = await response.json();
       if (!response.ok) {
-        setIsSubmitting(!isSubmitting)
+        setIsSubmitting(false)
         return toast.error(userData?.message, { duration: 5000 });
       }
-      setIsSubmitting(!isSubmitting)
-      localStorage.setItem("access_token", JSON.stringify(token));
-      localStorage.setItem("user", JSON.stringify(data));
-
+      setIsSubmitting(false)
       toast.success(userData?.message, { duration: 5000 });
+      dispatch(setUserInfo(userData));
+
       router.push("/");
     } catch (error) {
       console.error("from catch", error);
     }
   }
+
   return (
     <div className="max-w-lg mx-auto my-4 p-8 bg-white shadow-md rounded-md">
       <h1 className="text-2xl font-bold mb-6">Sign Up</h1>
@@ -85,7 +94,8 @@ const SignUpForm: React.FC = () => {
               <FormItem>
                 <FormLabel>Username</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter your username" {...field} />
+                  <Input placeholder="Enter your username" {...field} autoComplete="true" />
+                  
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -103,6 +113,7 @@ const SignUpForm: React.FC = () => {
                   <Input
                     type="email"
                     placeholder="Enter your email"
+                    autoComplete="true"
                     {...field}
                   />
                 </FormControl>
@@ -122,6 +133,7 @@ const SignUpForm: React.FC = () => {
                   <Input
                     type="password"
                     placeholder="Enter your password"
+                    autoComplete="true"
                     {...field}
                   />
                 </FormControl>
@@ -133,9 +145,9 @@ const SignUpForm: React.FC = () => {
           <Button type="submit" className="w-full bg-[#164674] hover:opacity-90" disabled={isSubmitting}>
             {isSubmitting ? "Submitting..." : "Sign Up"}
           </Button>
-          <div className="mt-4">
+          <div className="mt-4 flex">
           <p> have an account?</p>
-          <Link href="/login" className="text-[#164674] font-semibold underline">login</Link>
+          <Link href="/login" className="text-[#164674] font-semibold underline ml-1">login</Link>
           </div>
         </form>
       </Form>

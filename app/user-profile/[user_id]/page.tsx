@@ -8,6 +8,7 @@ import { CiEdit } from "react-icons/ci";
 import { MdDeleteOutline } from "react-icons/md";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/redux/hooks";
 
 
 interface Blog {
@@ -22,8 +23,7 @@ const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
 const ProfilePage = ({ params }: { params: { user_id: number} }) => {
   const router = useRouter();
-  const data = localStorage.getItem('user');
-  const user = data? JSON.parse(data) : null;
+  const user = useAppSelector((state) => state.auth.data);
   const userName = user?.userName;
   const email = user?.email;
 
@@ -31,8 +31,7 @@ const ProfilePage = ({ params }: { params: { user_id: number} }) => {
 
   // State for blogs
   const [blogs, setBlogs] = useState<Array<Blog>>([]);
-  const access_token = localStorage.getItem("access_token");
-  const token = access_token ? JSON.parse(access_token) : null;
+  const token = useAppSelector((state) => state.auth.token)
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -90,18 +89,24 @@ const ProfilePage = ({ params }: { params: { user_id: number} }) => {
         {/* Blogs Listing */}
         {blogs.length > 0 ? (
           blogs.map((blog) => (
-            <Card key={blog.id} className="mb-6 bg-white shadow-md rounded-lg">
+            <Card key={blog.id} className="mb-6 bg-white shadow-md rounded-lg cursor-pointer">
               <CardHeader>
                 <CardTitle className="text-xl font-semibold flex justify-between">
-                  {blog.title}
+                <p className="text-gray-700">
+                  {blog.title.length > 40 ? 
+                    `${blog.title.substring(0, 40)}...`
+                   : blog.title}
+                </p>
                   <div className="flex gap-4">
                     <Button variant="outline" onClick={()=> router.push(`/update-post/${blog?.user_id}/${blog?.id}`)}><CiEdit/></Button>
                     <Button variant="outline" onClick={() => handleDeleteBlog(blog?.user_id,blog?.id)}><MdDeleteOutline/></Button>
                   </div>
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-gray-700">{blog.content}</p>
+              <CardContent onClick={() => router.push(`/blog/${blog?.user_id}/${blog?.id}`)}>
+               <p>
+                {blog?.content.length > 200 ? `${blog.content.substring(0, 200)}...` : blog.content}
+               </p>
               </CardContent>
             </Card>
           ))
