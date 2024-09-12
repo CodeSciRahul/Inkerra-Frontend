@@ -17,6 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useAppSelector } from "@/redux/hooks";
 
 const formSchema = z.object({
   title: z
@@ -35,8 +36,7 @@ const CreatePost = ({ params }: { params: { user_id: string } }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const user_id = params.user_id;
-  const access_token = localStorage.getItem("access_token");
-  const token = access_token ? JSON.parse(access_token) : null;
+  const token = useAppSelector((state) => state.auth.token)
 
   const {
     register,
@@ -45,8 +45,6 @@ const CreatePost = ({ params }: { params: { user_id: string } }) => {
   } = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
   });
-
-  console.log(`${baseURL}/api/${user_id}`);
 
   // Form submission handler
   const onSubmit = async (values: FormSchema) => {
@@ -116,7 +114,7 @@ const CreatePost = ({ params }: { params: { user_id: string } }) => {
           </CardContent>
 
           <CardFooter className="flex justify-end">
-          <Button type="submit" className=" bg-[#164674] hover:bg[#164674] hover:opacity-90" disabled={isSubmitting}>
+          <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Posting..." : "Creat Post"}
           </Button>
           </CardFooter>

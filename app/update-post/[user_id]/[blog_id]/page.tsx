@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAppSelector } from "@/redux/hooks";
 
 // Zod schema for form validation
 const formSchema = z.object({
@@ -36,8 +37,7 @@ const UpdateBlog = ({ params }: { params: { user_id: number; blog_id: number } }
   const router = useRouter();
   const user_id = params.user_id;
   const blog_id = params.blog_id;
-  const access_token = localStorage.getItem("access_token");
-  const token = access_token ? JSON.parse(access_token) : null;
+  const token = useAppSelector((state) => state.auth.token)
 
 
   const {
@@ -58,7 +58,7 @@ const UpdateBlog = ({ params }: { params: { user_id: number; blog_id: number } }
           {
             method: "GET",
             headers: {
-              Authorization: `Bearer ${token}`, // Attach the token
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -143,7 +143,7 @@ const UpdateBlog = ({ params }: { params: { user_id: number; blog_id: number } }
           <CardFooter className="flex justify-end">
             <Button
               type="submit"
-              className="bg-blue-500 text-white"
+              className="text-white"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Updating..." : "Update Blog"}

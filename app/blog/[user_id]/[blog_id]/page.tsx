@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/redux/hooks";
 
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -10,14 +11,8 @@ const Page = ({ params }: { params: { user_id: number; blog_id: number } }) => {
   const [blogTitle, setBlogTitle] = useState<string>("");
   const [blogContent, setBlogContent] = useState<string>("");
   const router = useRouter();
-  const [token, setToken] = useState<string | null>(null);
-
-  // Fetch the token only on the client side
-  useEffect(() => {
-    const access_token = localStorage.getItem("access_token");
-    const parsedToken = access_token ? JSON.parse(access_token) : null;
-    setToken(parsedToken);
-  }, [router]);
+  const token = useAppSelector((state) => state.auth.token)
+  
 
   useEffect(() => {
     const getPost = async () => {
@@ -26,7 +21,6 @@ const Page = ({ params }: { params: { user_id: number; blog_id: number } }) => {
           `${baseURL}/api/${params.user_id}/${params.blog_id}`,
           {
             method: "GET",
-           
           }
         );
         const blog = await response.json();
