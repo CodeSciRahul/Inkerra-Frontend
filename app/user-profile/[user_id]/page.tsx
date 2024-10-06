@@ -9,6 +9,8 @@ import { MdDeleteOutline } from "react-icons/md";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/redux/hooks";
+import { constant } from "@/constant/constant";
+import ProtectedRoute from "@/protectRoute/ProtectedRoute";
 
 
 interface Blog {
@@ -18,7 +20,7 @@ interface Blog {
   user_id: number;
 }
 
-const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
+const baseURL = constant?.public_base_url
 
 
 const ProfilePage = ({ params }: { params: { user_id: number} }) => {
@@ -74,6 +76,7 @@ const ProfilePage = ({ params }: { params: { user_id: number} }) => {
   }
 
   return (
+    <ProtectedRoute>
     <div className="container mx-auto p-4">
       {/* User Info */}
       <div className="bg-white shadow-md rounded-lg p-6 mb-6 max-w-3xl mx-auto">
@@ -116,6 +119,8 @@ const ProfilePage = ({ params }: { params: { user_id: number} }) => {
       </div>
       <Toaster/>
     </div>
+    </ ProtectedRoute>
+
   );
 };
 

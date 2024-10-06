@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/redux/hooks";
+import { constant } from "@/constant/constant";
 
-
-const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
+const baseURL = constant?.public_base_url
 
 const Page = ({ params }: { params: { user_id: number; blog_id: number } }) => {
   const [blogTitle, setBlogTitle] = useState<string>("");

@@ -31,7 +31,6 @@ export const Header = () => {
 
   useEffect(() => {
     dispatch(hydrateUserInfoFromLocalStorage());
-
   }, [router,dispatch])
   
 
@@ -93,7 +92,7 @@ export const Header = () => {
             <Button
               variant="link"
               className="text-white flex gap-2"
-              onClick={() => router.push("/login")}
+              onClick={() => router.push("/auth/login")}
             >
               <LuArrowRightFromLine />
               Login

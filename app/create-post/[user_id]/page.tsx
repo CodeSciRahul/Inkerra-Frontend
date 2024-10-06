@@ -18,6 +18,8 @@ import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAppSelector } from "@/redux/hooks";
+import { constant } from "@/constant/constant";
+import ProtectedRoute from "@/protectRoute/ProtectedRoute";
 
 const formSchema = z.object({
   title: z
@@ -29,7 +31,7 @@ const formSchema = z.object({
 
 
 type FormSchema = z.infer<typeof formSchema>;
-const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
+const baseURL = constant?.public_base_url
 
 
 const CreatePost = ({ params }: { params: { user_id: string } }) => {
@@ -73,6 +75,7 @@ const CreatePost = ({ params }: { params: { user_id: string } }) => {
   };
 
   return (
+   <ProtectedRoute>
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
       <Card className="w-full max-w-3xl bg-white shadow-md rounded-lg">
         <CardHeader>
@@ -122,6 +125,7 @@ const CreatePost = ({ params }: { params: { user_id: string } }) => {
       </Card>
       <Toaster />
     </div>
+    </ProtectedRoute>
   );
 };
 
