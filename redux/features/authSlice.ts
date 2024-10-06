@@ -9,23 +9,6 @@ interface responseType {
   } | null;
 }
 
-// let user = null;
-// let token = null;
-//localStorage server side pr exist nhi krta h islye agar ham direct localStorge ka use krte h to server side pr error dega to ham condition laga skte h ki agar window ka type undefined nhi h jo ki browser(client) side pr hi possible h tabhi localstorage run hoga.
-// if(typeof window !== 'undefined'){
-//     const isUser = localStorage.getItem('user');
-//     const user = isUser ? JSON.parse(isUser) : null
-
-//     const istoken = localStorage.getItem('access_token');
-//     const token = istoken ? JSON.parse(istoken) : null
-// }
-
-// const isUser = localStorage.getItem("user");
-// const user = isUser ? JSON.parse(isUser) : null;
-
-// const istoken = localStorage.getItem("access_token");
-// const token = istoken ? JSON.parse(istoken) : null;
-
 const initialState: responseType = {
   data: null,
   token: null,

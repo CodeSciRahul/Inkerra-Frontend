@@ -9,12 +9,15 @@ import {
 } from "../components/ui/card";
 import { useRouter } from "next/navigation";
 import { CardSkelton } from "@/components/CardSkeleton";
-
+import { Button } from "@/components/ui/button";
+import { constant } from "@/constant/constant";
 interface Post {
   content: string;
   id: number;
   title: string;
   user_id: number;
+  userName: string;
+  email: string;
 }
 
 const skeletons = [
@@ -46,10 +49,9 @@ const skeletons = [
     key: 7,
     card: <CardSkelton />,
   },
-
 ];
 
-const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
+const baseURL = constant?.public_base_url
 
 export default function Home() {
   const [posts, setPosts] = useState<Array<Post>>([]);
@@ -96,14 +98,15 @@ export default function Home() {
             <Card
               key={post?.id}
               className="hover:shadow-lg transition-shadow cursor-pointer"
-              onClick={() => navigateToblog(post.user_id, post.id)}
             >
               <CardHeader>
                 <CardTitle className="text-lg font-bold">
                   {post.title}
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent
+                onClick={() => navigateToblog(post.user_id, post.id)}
+              >
                 <p className="text-gray-700">
                   {post.content.length > 40
                     ? `${post.content.substring(0, 40)}...`
@@ -111,7 +114,13 @@ export default function Home() {
                 </p>
               </CardContent>
               <CardFooter>
-                <p className="text-sm text-gray-500">User ID: {post.user_id}</p>
+                <Button
+                  variant="link"
+                  className="text-sm text-gray-500"
+                  onClick={() => router.push(`view-profile/${post.user_id}`)}
+                >
+                  User Name: {post.userName}
+                </Button>
               </CardFooter>
             </Card>
           ))}

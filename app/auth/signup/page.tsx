@@ -19,6 +19,7 @@ import Link from "next/link";
 import { useAppDispatch } from "@/redux/hooks";
 import { setUserInfo,hydrateUserInfoFromLocalStorage } from "@/redux/features/authSlice";
 import type { signupResType } from "@/interfaceType/authType";
+import { constant } from "@/constant/constant";
 
 
 const formSchema = z.object({
@@ -31,7 +32,7 @@ const formSchema = z.object({
     .min(6, { message: "Password must be at least 6 characters" }),
 });
 
-const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
+const baseURL = constant?.public_base_url
 
 
 const SignUpForm: React.FC = () => {
@@ -147,7 +148,7 @@ const SignUpForm: React.FC = () => {
           </Button>
           <div className="mt-4 flex">
           <p> have an account?</p>
-          <Link href="/login" className="text-[#164674] font-semibold underline ml-1">login</Link>
+          <Link href="login" className="text-[#164674] font-semibold underline ml-1">login</Link>
           </div>
         </form>
       </Form>

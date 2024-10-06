@@ -10,9 +10,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../components/ui/form";
-import { Input } from "../../components/ui/input"
-import { Button } from "../../components/ui/button";
+} from "../../../components/ui/form";
+import { Input } from "../../../components/ui/input"
+import { Button } from "../../../components/ui/button";
 import { useState,useEffect } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -20,6 +20,7 @@ import Link from "next/link";
 import { useAppDispatch } from "@/redux/hooks";
 import { setUserInfo,hydrateUserInfoFromLocalStorage } from "@/redux/features/authSlice";
 import type { loginResType } from "@/interfaceType/authType";
+import { constant } from "@/constant/constant";
 
 
 const formSchema = z.object({
@@ -29,8 +30,8 @@ const formSchema = z.object({
     .min(6, { message: "Password must be at least 6 characters" }),
 });
 
-const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
-
+const baseURL = constant?.public_base_url
+console.log(baseURL)
 
 const LoginForm: React.FC = () => {
   const router = useRouter();
@@ -124,7 +125,7 @@ const LoginForm: React.FC = () => {
             {isSubmitting ? "Logining..." : "Login"}
           </Button>
           <div className="mt-4 flex">
-          <p>Don&apos;t have an account?</p> <Link href="/signup" className="text-[#164674] font-semibold underline ml-1">signup</Link>
+          <p>Don&apos;t have an account?</p> <Link href="signup" className="text-[#164674] font-semibold underline ml-1">signup</Link>
           </div>
         </form>
       </Form>
