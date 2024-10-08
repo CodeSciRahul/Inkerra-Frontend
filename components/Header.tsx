@@ -149,7 +149,7 @@ export const Header = () => {
                   <Button
                     variant="link"
                     className="flex gap-2"
-                    onClick={() => router.push("/login")}
+                    onClick={() => router.push("/auth/login")}
                   >
                     <LuArrowRightFromLine />
                     Login

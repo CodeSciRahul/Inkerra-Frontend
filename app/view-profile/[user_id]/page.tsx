@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Toaster } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -9,19 +9,24 @@ import { useAppSelector } from "@/redux/hooks";
 import toast from "react-hot-toast";
 import { constant } from "@/constant/constant";
 import ProtectedRoute from "@/protectRoute/ProtectedRoute";
+import { useAppDispatch } from "@/redux/hooks";
+import { removeUserInfo } from "@/redux/features/authSlice";
 
 interface Blog {
-  id: number;
-  title: string;
-  content: string;
-  user_id: number;
+  content : string
+  created_at : string
+  id : string
+  title : string
+  updated_at: string
+  user_id : string
 }
 
 const baseURL = constant?.public_base_url
 
 const Page = ({ params }: { params: { user_id: number } }) => {
   const router = useRouter();
-  const token = useAppSelector((state) => state.auth.token);
+  const token = useAppSelector((state) => state?.auth?.token);
+  const dispatch = useAppDispatch()
 
   const [profileData, setProfileData] = useState<{
     userName: string;
@@ -46,31 +51,21 @@ const Page = ({ params }: { params: { user_id: number } }) => {
 
         const profileData = await profileResponse.json();
         if (!profileResponse.ok) {
+          if(profileResponse?.status === 401){
+            dispatch(removeUserInfo())
+            router.push('/auth/login');
+          } 
           return toast.error(`${profileData?.message}`, { duration: 5000 });
         }
         setProfileData(profileData?.data);
-
-        // Fetching user's blogs
-        const blogResponse = await fetch(`${baseURL}/api/${viewedUserId}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const blogData = await blogResponse.json();
-        console.log(blogData);
-        if (!blogResponse.ok) {
-          return toast.error(`${blogData?.message}`, { duration: 5000 });
-        }
-        setBlogs(blogData?.data);
+        setBlogs(profileData?.posts)
       } catch (error) {
         toast.error(`${error}`);
       }
     };
 
-    fetchProfileAndBlogs();
-  }, [token, viewedUserId]);
-
+  token && fetchProfileAndBlogs();
+  }, [dispatch, router, token, viewedUserId]);
   return (
     <ProtectedRoute>
     <div className="container mx-auto p-4">
@@ -114,9 +109,9 @@ const Page = ({ params }: { params: { user_id: number } }) => {
               <CardHeader>
                 <CardTitle className="text-xl font-semibold flex justify-between">
                   <p className="text-gray-700">
-                    {blog.title.length > 40
-                      ? `${blog.title.substring(0, 40)}...`
-                      : blog.title}
+                    {blog?.title?.length > 40
+                      ? `${blog?.title?.substring(0, 40)}...`
+                      : blog?.title}
                   </p>
                 </CardTitle>
               </CardHeader>
@@ -124,11 +119,14 @@ const Page = ({ params }: { params: { user_id: number } }) => {
                 onClick={() => router.push(`/blog/${blog.user_id}/${blog.id}`)}
               >
                 <p>
-                  {blog.content.length > 200
-                    ? `${blog.content.substring(0, 200)}...`
-                    : blog.content}
+                  {blog?.content?.length > 200
+                    ? `${blog?.content?.substring(0, 200)}...`
+                    : blog?.content}
                 </p>
               </CardContent>
+              <CardFooter> 
+               <p className="text-gray-400">{blog?.created_at}</p>
+              </CardFooter>
             </Card>
           ))
         ) : (

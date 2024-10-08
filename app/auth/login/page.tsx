@@ -60,12 +60,10 @@ const LoginForm: React.FC = () => {
         body: JSON.stringify(values),
       });
       const userData:loginResType = await response.json();
-      console.log(userData);
+      setIsSubmitting(false)
       if (!response.ok) {
-        setIsSubmitting(false)
         return toast.error(userData?.message, { duration: 5000 });
       }
-      setIsSubmitting(false)
       dispatch(setUserInfo(userData));
 
 

@@ -20,6 +20,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useAppSelector } from "@/redux/hooks";
 import { constant } from "@/constant/constant";
 import ProtectedRoute from "@/protectRoute/ProtectedRoute";
+import { useAppDispatch } from "@/redux/hooks";
+import { removeUserInfo } from "@/redux/features/authSlice";
 
 // Zod schema for form validation
 const formSchema = z.object({
@@ -40,6 +42,7 @@ const UpdateBlog = ({ params }: { params: { user_id: number; blog_id: number } }
   const user_id = params.user_id;
   const blog_id = params.blog_id;
   const token = useAppSelector((state) => state.auth.token)
+  const dispatch = useAppDispatch();
 
 
   const {
@@ -66,6 +69,10 @@ const UpdateBlog = ({ params }: { params: { user_id: number; blog_id: number } }
         );
         const data = await response.json();
         if (!response.ok) {
+          if(response?.status === 401){
+            dispatch(removeUserInfo())
+            router.push('/auth/login');
+          } 
           return toast.error(`${data?.message}`, { duration: 5000 });
         }
         setValue("title", data?.data?.title);
@@ -75,7 +82,7 @@ const UpdateBlog = ({ params }: { params: { user_id: number; blog_id: number } }
       }
     };
     getBlog();
-  }, [blog_id, user_id, token, setValue]);
+  }, [dispatch, router, blog_id, user_id, token, setValue]);
 
   // Form submission handler
   const onSubmit = async (values: FormSchema) => {

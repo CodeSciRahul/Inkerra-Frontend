@@ -11,7 +11,8 @@ import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/redux/hooks";
 import { constant } from "@/constant/constant";
 import ProtectedRoute from "@/protectRoute/ProtectedRoute";
-
+import { useAppDispatch } from "@/redux/hooks";
+import { removeUserInfo } from "@/redux/features/authSlice";
 
 interface Blog {
   id: number;
@@ -25,10 +26,10 @@ const baseURL = constant?.public_base_url
 
 const ProfilePage = ({ params }: { params: { user_id: number} }) => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.data);
   const userName = user?.userName;
   const email = user?.email;
-
   const user_id = params.user_id;
 
   // State for blogs
@@ -38,6 +39,7 @@ const ProfilePage = ({ params }: { params: { user_id: number} }) => {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
+        console.log("token", token)
         const response =await fetch(`${baseURL}/api/${user_id}`, {
           method: "GET",
           headers: {
@@ -46,6 +48,10 @@ const ProfilePage = ({ params }: { params: { user_id: number} }) => {
         });
         const data = await response.json()
         if(!response.ok){
+          if(response?.status === 401){
+            dispatch(removeUserInfo())
+            router.push('/auth/login');
+          } 
           return toast.error(`${data?.message}`, {duration: 5000});
         } 
         setBlogs(data?.data);
@@ -54,8 +60,8 @@ const ProfilePage = ({ params }: { params: { user_id: number} }) => {
       }
     };
 
-    fetchBlogs();
-  }, [token, user_id]);
+  token && fetchBlogs();
+  }, [dispatch, router, token, user_id]);
 
    const handleDeleteBlog = async(user_id:number, blog_id:number) => {
     try {
@@ -102,7 +108,11 @@ const ProfilePage = ({ params }: { params: { user_id: number} }) => {
                 </p>
                   <div className="flex gap-4">
                     <Button variant="outline" onClick={()=> router.push(`/update-post/${blog?.user_id}/${blog?.id}`)}><CiEdit/></Button>
-                    <Button variant="outline" onClick={() => handleDeleteBlog(blog?.user_id,blog?.id)}><MdDeleteOutline/></Button>
+                    <Button variant="outline" onClick={() =>{
+                      handleDeleteBlog(blog?.user_id,blog?.id)
+                    const new_blog = blogs?.filter((isdeleteblog) => isdeleteblog?.id !== blog?.id)
+                    setBlogs(new_blog)
+                    }}><MdDeleteOutline/></Button>
                   </div>
                 </CardTitle>
               </CardHeader>
