@@ -20,6 +20,8 @@ import { useState } from "react";
 import { useAppSelector } from "@/redux/hooks";
 import { constant } from "@/constant/constant";
 import ProtectedRoute from "@/protectRoute/ProtectedRoute";
+import { useAppDispatch } from "@/redux/hooks";
+import { removeUserInfo } from "@/redux/features/authSlice";
 
 const formSchema = z.object({
   title: z
@@ -39,6 +41,7 @@ const CreatePost = ({ params }: { params: { user_id: string } }) => {
   const router = useRouter();
   const user_id = params.user_id;
   const token = useAppSelector((state) => state.auth.token)
+  const dispatch = useAppDispatch()
 
   const {
     register,
@@ -61,16 +64,20 @@ const CreatePost = ({ params }: { params: { user_id: string } }) => {
         body: JSON.stringify(values),
       });
       const data = await response.json();
-      
+      setIsSubmitting(false)
       if (!response.ok){
-        setIsSubmitting(!isSubmitting)
+        if(response?.status === 401){
+          dispatch(removeUserInfo())
+          router.push('/auth/login');
+        } 
+        console.log(response?.status )
         return toast.error(`${data?.message}`, { duration: 5000 });
       } 
       toast.success(`${data?.message}`, { duration: 5000 });
-      setIsSubmitting(!isSubmitting)
       router.push('/')
     } catch (error) {
       toast.error(`Error: ${error}`, { duration: 5000 });
+      setIsSubmitting(false)
     }
   };
 

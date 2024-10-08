@@ -1,5 +1,4 @@
-// buttonVariants.ts
-import { cva } from "class-variance-authority"
+import { cva } from "class-variance-authority";
 
 export const buttonVariants = cva(
   "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
@@ -7,9 +6,9 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow hover:bg-[#164674] bg-[#164674] hover:opacity-90",  // Correct hover syntax (fix issue here)
+          "bg-primary text-primary-foreground shadow hover:bg-[#164674] bg-[#164674] hover:opacity-90",
         destructive:
-          "bg-destructive text-destructive-foreground shadow-sm hover:bg-[#164674] bg-[#164674] hover:opacity-90",
+          "bg-destructive text-destructive-foreground shadow-sm hover:bg-[#164674] hover:opacity-90",
         outline:
           "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
         secondary:
@@ -29,4 +28,4 @@ export const buttonVariants = cva(
       size: "default",
     },
   }
-)
+);

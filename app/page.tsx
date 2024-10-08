@@ -11,6 +11,8 @@ import { useRouter } from "next/navigation";
 import { CardSkelton } from "@/components/CardSkeleton";
 import { Button } from "@/components/ui/button";
 import { constant } from "@/constant/constant";
+import { useAppSelector } from "@/redux/hooks";
+import toast from "react-hot-toast";
 interface Post {
   content: string;
   id: number;
@@ -58,6 +60,8 @@ export default function Home() {
   const [isData, setisData] = useState<boolean>(false);
   const router = useRouter();
 
+  const user = useAppSelector((state) => state?.auth?.data)
+
   useEffect(() => {
     const getAlldata = async () => {
       setisData(false);
@@ -65,13 +69,12 @@ export default function Home() {
         const response = await fetch(`${baseURL}/api/blog`, {
           method: "GET",
         });
-        if (!response.ok) {
-          setisData(true);
-          throw new Error(`Error: ${response.status}`);
-        }
-        const data = await response.json();
-        setPosts(data?.data);
         setisData(true);
+        const data = await response.json();
+        if (!response.ok) {
+        return toast.error(`${data?.message}`, {duration: 5000});
+        }
+        setPosts(data?.data);
       } catch (error) {
         console.error("Failed to fetch data:", error);
       }
@@ -86,6 +89,12 @@ export default function Home() {
 
   return (
     <div className="container mx-auto p-4 w-[90%]">
+      {(isData && posts?.length === 0 ) && 
+      <div className="text-center absolute top-[50%] left-[20%] right-[20%]">
+        <h1 className="sm:text-sm md:text-lg lg:text-lg xl:text-xl ">No posts have been added yet—why not be the first to create and share your story?</h1>
+       <div className="mt-3"><Button onClick={() => router.push(`/create-post/${user?.id}`)}>Create Post</Button></div> 
+      </div>
+      }
       {!isData ? (
         <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {skeletons.map((skeleton) => (
@@ -108,20 +117,27 @@ export default function Home() {
                 onClick={() => navigateToblog(post.user_id, post.id)}
               >
                 <p className="text-gray-700">
-                  {post.content.length > 40
-                    ? `${post.content.substring(0, 40)}...`
-                    : post.content}
+                  {post?.content?.length > 40
+                    ? `${post?.content.substring(0, 40)}...`
+                    : post?.content}
                 </p>
               </CardContent>
               <CardFooter>
-                <Button
-                  variant="link"
-                  className="text-sm text-gray-500"
-                  onClick={() => router.push(`view-profile/${post.user_id}`)}
-                >
-                  User Name: {post.userName}
-                </Button>
-              </CardFooter>
+  <div className="inline-block">
+    <Button
+      variant="link"
+      className="text-sm text-gray-500"
+      onClick={() => {
+        user?.id === post?.user_id
+          ? router.push(`user-profile/${post.user_id}`)
+          : router.push(`view-profile/${post.user_id}`);
+      }}
+    >
+      User Name: {post.userName}
+    </Button>
+  </div>
+</CardFooter>
+
             </Card>
           ))}
         </div>

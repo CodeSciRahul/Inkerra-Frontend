@@ -5,6 +5,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/redux/hooks";
 import { hydrateUserInfoFromLocalStorage } from "@/redux/features/authSlice";
+import { useMemo } from "react";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -12,11 +13,11 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const dispatch = useAppDispatch();
-  const token = useAppSelector((state) => state?.auth?.token);
   const router = useRouter();
+  useMemo(() => dispatch(hydrateUserInfoFromLocalStorage()),[router])
+  const token = useAppSelector((state) => state?.auth?.token);
 
   useLayoutEffect(() => {
-    dispatch(hydrateUserInfoFromLocalStorage());
     if (!token) {
      router.push("/auth/login");
     }
