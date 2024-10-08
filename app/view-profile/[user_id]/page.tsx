@@ -65,7 +65,7 @@ const Page = ({ params }: { params: { user_id: number } }) => {
     };
 
   token && fetchProfileAndBlogs();
-  }, [token, viewedUserId]);
+  }, [dispatch, router, token, viewedUserId]);
   return (
     <ProtectedRoute>
     <div className="container mx-auto p-4">

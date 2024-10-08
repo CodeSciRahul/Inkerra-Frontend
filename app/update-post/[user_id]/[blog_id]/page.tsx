@@ -82,7 +82,7 @@ const UpdateBlog = ({ params }: { params: { user_id: number; blog_id: number } }
       }
     };
     getBlog();
-  }, [blog_id, user_id, token, setValue]);
+  }, [dispatch, router, blog_id, user_id, token, setValue]);
 
   // Form submission handler
   const onSubmit = async (values: FormSchema) => {

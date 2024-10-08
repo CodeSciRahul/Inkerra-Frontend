@@ -61,7 +61,7 @@ const ProfilePage = ({ params }: { params: { user_id: number} }) => {
     };
 
   token && fetchBlogs();
-  }, [token, user_id]);
+  }, [dispatch, router, token, user_id]);
 
    const handleDeleteBlog = async(user_id:number, blog_id:number) => {
     try {
