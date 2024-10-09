@@ -3,6 +3,7 @@ import "./globals.css";
 import { Header } from "../components/Header";
 import StoreProvider from "./StoreProvider";
 import { Toaster } from "react-hot-toast";
+import { BottomNavbar } from "@/components/BottomNavbar";
 
 export const metadata: Metadata = {
   title: "Blog App",
@@ -22,7 +23,8 @@ export default function RootLayout({
         >
           {/* bodycolor = bg-gray-100 */}
           <Header />
-          {children}
+         <div className="pt-16">{children}</div>
+          <BottomNavbar />
           <Toaster />
         </body>
       </html>
