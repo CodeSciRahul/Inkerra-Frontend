@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect,useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +22,7 @@ import { constant } from "@/constant/constant";
 import ProtectedRoute from "@/protectRoute/ProtectedRoute";
 import { useAppDispatch } from "@/redux/hooks";
 import { removeUserInfo } from "@/redux/features/authSlice";
+import { Spinner } from "@/Spinner";
 
 // Zod schema for form validation
 const formSchema = z.object({
@@ -43,6 +44,7 @@ const UpdateBlog = ({ params }: { params: { user_id: number; blog_id: number } }
   const blog_id = params.blog_id;
   const token = useAppSelector((state) => state.auth.token)
   const dispatch = useAppDispatch();
+  const [isdata, setisdata] = useState<boolean>(false)
 
 
   const {
@@ -68,6 +70,7 @@ const UpdateBlog = ({ params }: { params: { user_id: number; blog_id: number } }
           }
         );
         const data = await response.json();
+        setisdata(true)
         if (!response.ok) {
           if(response?.status === 401){
             dispatch(removeUserInfo())
@@ -111,6 +114,7 @@ const UpdateBlog = ({ params }: { params: { user_id: number; blog_id: number } }
 
   return (
     <ProtectedRoute>
+      {!isdata && <div className="fixed inset-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50 z-20"> <Spinner /></div>}
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
       <Card className="w-full max-w-3xl bg-white shadow-md rounded-lg">
         <CardHeader>

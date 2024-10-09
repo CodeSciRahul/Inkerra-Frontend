@@ -4,18 +4,15 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
 import { FaUser, FaHome } from "react-icons/fa";
-import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaSignsPost } from "react-icons/fa6";
-import { LuArrowLeftToLine, LuArrowRightFromLine } from "react-icons/lu";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "../components/ui/popover";
+import { LuArrowRightFromLine } from "react-icons/lu";
 import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { removeUserInfo } from "@/redux/features/authSlice";
 import { useEffect } from "react";
 import { hydrateUserInfoFromLocalStorage } from "@/redux/features/authSlice";
+import { Input } from "./ui/input";
+import { TbLogout2 } from "react-icons/tb";
+
 
 export const Header = () => {
   const router = useRouter();
@@ -45,122 +42,76 @@ export const Header = () => {
   };
 
   return (
-    <header className="bg-[#164674]">
-      <div className="container mx-auto flex justify-between items-center py-4 px-6 md:px-24">
-        {/* Logo */}
-        <div className="text-white text-2xl font-bold">Logo</div>
-
-        {/* Desktop Links */}
-        <div className="hidden md:flex space-x-6 text-[1.6rem] text-white">
-          <Button
-            variant="link"
-            className="text-white flex gap-2"
-            onClick={() => router.push("/")}
-          >
-            <FaHome />
-            Home
+    <header className="bg-[#164674] fixed w-full">
+    <div className="container w-full mx-auto flex justify-between items-center py-4 px-8">
+      {/* Logo */}
+      <div className="text-white text-2xl font-bold">
+        Logo
+      </div>
+  
+      {/* Desktop Links */}
+      <div className="flex">
+        <div className="hidden lg:flex ">
+        <Button
+          variant="link"
+          className="text-white flex gap-2 hover:text-gray-300 transition"
+          onClick={() => router.push("/")}
+        >
+            <FaHome className="text-[1.4rem] lg:text-[1rem]"/>
+            <p className="hidden lg:flex">Home</p> 
           </Button>
-          {token ? (
-            <>
-              <Button
-                variant="link"
-                className="text-white flex gap-2"
-                onClick={() => handleCreatePost(user?.id)}
-              >
-                <FaSignsPost />
-                Create Post
-              </Button>
-              <Button
-                variant="link"
-                className="text-white flex gap-2"
-                onClick={() => handleProfile(user?.id)}
-              >
-                <FaUser />
-                Profile
-              </Button>
-
-              <Button
-                variant="link"
-                className="text-white flex gap-2"
-                onClick={handleLogOut}
-              >
-                <LuArrowLeftToLine />
-                Logout
-              </Button>
-            </>
-          ) : (
+  
+        {token ? (
+          <>
             <Button
               variant="link"
-              className="text-white flex gap-2"
-              onClick={() => router.push("/auth/login")}
+              className="text-white flex gap-2 hover:text-gray-300 transition"
+              onClick={() => handleCreatePost(user?.id)}
             >
-              <LuArrowRightFromLine />
-              Login
-            </Button>
-          )}
-        </div>
-
-        {/* Hamburger Menu for Mobile */}
-        <div className="md:hidden text-[#164674]">
-          <Popover>
-            <PopoverTrigger>
-              <Button variant="link" className="text-white">
-                <BsThreeDotsVertical className="text-[1.5rem]" />
+              <FaSignsPost className="text-[1.4rem] lg:text-[1rem]" />
+              <p className="hidden lg:flex">Create Post</p> 
               </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-fit">
-              <div className="flex flex-col space-y-4 p-4 text-[#164674]">
-                <Button
-                  variant="link"
-                  className="flex gap-2"
-                  onClick={() => router.push("/")}
-                >
-                  <FaHome />
-                  Home
-                </Button>
-                {token ? (
-                  <>
-                    <Button
-                      variant="link"
-                      className="flex gap-2"
-                      onClick={() => handleCreatePost(user?.id)}
-                    >
-                      <FaSignsPost />
-                      Create Post
-                    </Button>
-                    <Button
-                      variant="link"
-                      className="flex gap-2"
-                      onClick={() => handleProfile(user?.id)}
-                    >
-                      <FaUser />
-                      Profile
-                    </Button>
-                    <Button
-                      variant="link"
-                      onClick={handleLogOut}
-                      className="flex gap-2"
-                    >
-                      <LuArrowLeftToLine />
-                      Logout
-                    </Button>
-                  </>
-                ) : (
-                  <Button
-                    variant="link"
-                    className="flex gap-2"
-                    onClick={() => router.push("/auth/login")}
-                  >
-                    <LuArrowRightFromLine />
-                    Login
-                  </Button>
-                )}
-              </div>
-            </PopoverContent>
-          </Popover>
+            <Button
+              variant="link"
+              className="text-white flex gap-2 hover:text-gray-300 transition"
+              onClick={() => handleProfile(user?.id)}
+            >
+              <FaUser className="text-[1.4rem] lg:text-[1rem]"/>
+              <p className="hidden lg:flex">Profile</p> 
+            </Button>
+            <Button
+              variant="link"
+              className="text-white flex gap-2 hover:text-gray-300 transition"
+              onClick={handleLogOut}
+            >
+              <TbLogout2 className="text-[1.4rem] lg:text-[1.15rem]"/>
+              <p className="hidden lg:flex">Logout</p> 
+            </Button>
+          </>
+        ) : (
+          <Button
+            variant="link"
+            className="text-white flex gap-2 hover:text-gray-300 transition"
+            onClick={() => router.push("/auth/login")}
+          >
+            <LuArrowRightFromLine className="text-[1.6rem] sm:text-[1rem]"/>
+            <p className="hidden lg:flex">Login</p> 
+
+          </Button>
+        )}
+        </div>
+  
+        {/* Input Field */}
+        <div className="ml-4">
+          <Input
+            placeholder="Search..."
+            className="px-3 py-1 rounded-md text-white focus:outline-none"
+          />
         </div>
       </div>
-      <Toaster />
-    </header>
+    </div>
+    <Toaster />
+  </header>
+  
   );
 };

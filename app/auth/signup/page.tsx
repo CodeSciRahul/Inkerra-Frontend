@@ -78,7 +78,7 @@ const SignUpForm: React.FC = () => {
 
       router.push("/");
     } catch (error) {
-      console.error("from catch", error);
+      toast.error(`${error}`);
     }
   }
 

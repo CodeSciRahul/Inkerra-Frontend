@@ -70,7 +70,6 @@ const CreatePost = ({ params }: { params: { user_id: string } }) => {
           dispatch(removeUserInfo())
           router.push('/auth/login');
         } 
-        console.log(response?.status )
         return toast.error(`${data?.message}`, { duration: 5000 });
       } 
       toast.success(`${data?.message}`, { duration: 5000 });

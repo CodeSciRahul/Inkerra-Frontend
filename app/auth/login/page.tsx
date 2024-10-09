@@ -31,7 +31,6 @@ const formSchema = z.object({
 });
 
 const baseURL = constant?.public_base_url
-console.log(baseURL)
 
 const LoginForm: React.FC = () => {
   const router = useRouter();

@@ -76,7 +76,7 @@ export default function Home() {
         }
         setPosts(data?.data);
       } catch (error) {
-        console.error("Failed to fetch data:", error);
+        toast.error(`${error}`)
       }
     };
 
@@ -96,11 +96,15 @@ export default function Home() {
       </div>
       }
       {!isData ? (
-        <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {skeletons.map((skeleton) => (
-            <div key={skeleton.key}>{skeleton?.card}</div>
-          ))}
-        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 p-4">
+  {skeletons.map((skeleton) => (
+    <div key={skeleton.key} className="w-full flex justify-center">
+      <div className="w-full max-w-[350px]">{skeleton?.card}</div>
+    </div>
+  ))}
+</div>
+
+     
       ) : (
         <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {posts?.map((post) => (
