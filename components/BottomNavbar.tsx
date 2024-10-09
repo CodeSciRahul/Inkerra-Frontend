@@ -4,14 +4,8 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
 import { FaUser, FaHome } from "react-icons/fa";
-import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaSignsPost } from "react-icons/fa6";
-import { LuArrowLeftToLine, LuArrowRightFromLine } from "react-icons/lu";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "../components/ui/popover";
+import { LuArrowRightFromLine } from "react-icons/lu";
 import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { removeUserInfo } from "@/redux/features/authSlice";
 import { useEffect } from "react";
