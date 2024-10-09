@@ -115,7 +115,7 @@ const UpdateBlog = ({ params }: { params: { user_id: number; blog_id: number } }
   return (
     <ProtectedRoute>
       {!isdata && <div className="fixed inset-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50 z-20"> <Spinner /></div>}
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
+    <div className="flex justify-center items-center p-4">
       <Card className="w-full max-w-3xl bg-white shadow-md rounded-lg">
         <CardHeader>
           <CardTitle>Edit Blog</CardTitle>
