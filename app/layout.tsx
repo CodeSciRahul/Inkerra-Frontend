@@ -19,9 +19,8 @@ export default function RootLayout({
     <StoreProvider>
       <html lang="en">
         <body
-          className={` antialiased`}
+          className={` antialiased bg-gray-100 `}
         >
-          {/* bodycolor = bg-gray-100 */}
           <Header />
          <div className="pt-16">{children}</div>
           <BottomNavbar />

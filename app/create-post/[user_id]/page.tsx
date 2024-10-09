@@ -82,7 +82,7 @@ const CreatePost = ({ params }: { params: { user_id: string } }) => {
 
   return (
    <ProtectedRoute>
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
+    <div className="flex justify-center items-center p-4">
       <Card className="w-full max-w-3xl bg-white shadow-md rounded-lg">
         <CardHeader>
           <CardTitle>Create a New Post</CardTitle>
