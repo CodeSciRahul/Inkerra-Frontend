@@ -1,10 +1,4 @@
 export interface signupResType {
-  token: string;
-  data: {
-    userName: string;
-    email: string;
-    id: number;
-  };
   message: string;
 }
 

@@ -66,7 +66,7 @@ export default function Home() {
     const getAlldata = async () => {
       setisData(false);
       try {
-        const response = await fetch(`${baseURL}/api/blog`, {
+        const response = await fetch(`${baseURL}/api/blogs`, {
           method: "GET",
         });
         setisData(true);

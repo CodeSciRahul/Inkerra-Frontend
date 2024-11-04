@@ -13,13 +13,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
-import { useState,useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { useAppDispatch } from "@/redux/hooks";
-import { setUserInfo,hydrateUserInfoFromLocalStorage } from "@/redux/features/authSlice";
 import type { signupResType } from "@/interfaceType/authType";
 import { constant } from "@/constant/constant";
+import  SendEmailDialog  from "@/components/SendEmailDialog";
 
 
 const formSchema = z.object({
@@ -37,14 +35,9 @@ const baseURL = constant?.public_base_url
 
 const SignUpForm: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const dispatch = useAppDispatch()
-
-  useEffect(() => {
-    hydrateUserInfoFromLocalStorage();
-  }, [dispatch])
+  const [isVerificationEmailOpen, setisVerificationEmailOpen] =
+    useState<boolean>(false);
   
-
-  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -58,7 +51,7 @@ const SignUpForm: React.FC = () => {
     try {
       setIsSubmitting(true)
       const response = await fetch(
-        `${baseURL}/api/auth/createAccount`,
+        `${baseURL}/api/auth/signup`,
         {
           method: "POST",
           headers: {
@@ -74,15 +67,13 @@ const SignUpForm: React.FC = () => {
       }
       setIsSubmitting(false)
       toast.success(userData?.message, { duration: 5000 });
-      dispatch(setUserInfo(userData));
-
-      router.push("/");
     } catch (error) {
       toast.error(`${error}`);
     }
   }
 
   return (
+    <>
     <div className="max-w-lg mx-auto my-4 p-8 bg-white shadow-md rounded-md">
       <h1 className="text-2xl font-bold mb-6">Sign Up</h1>
       <Form {...form}>
@@ -147,12 +138,33 @@ const SignUpForm: React.FC = () => {
             {isSubmitting ? "Submitting..." : "Sign Up"}
           </Button>
           <div className="mt-4 flex">
-          <p> have an account?</p>
+          <p> Have an account?</p>
           <Link href="login" className="text-[#164674] font-semibold underline ml-1">login</Link>
           </div>
         </form>
       </Form>
-    </div>
+      <div className="flex">
+            <p>Didn&apos;t verify?</p>
+            <div
+              onClick={() =>
+                setisVerificationEmailOpen(!isVerificationEmailOpen)
+              }
+              className="text-[#164674] font-semibold underline cursor-pointer ml-1"
+            >
+              click to verify
+            </div>
+          </div>    </div>
+
+    {isVerificationEmailOpen && (
+        <SendEmailDialog
+          isOpen={isVerificationEmailOpen}
+          setisOpen={setisVerificationEmailOpen}
+          title="Resend Email"
+          description="Please enter your registered email address to receive a new verification link. The link will be valid for 30 minutes."
+          purpose="verification-email"
+        />
+      )}
+    </>
   );
 };
 
