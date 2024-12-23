@@ -13,8 +13,9 @@ import { Button } from "@/components/ui/button";
 import { constant } from "@/constant/constant";
 import { useAppSelector } from "@/redux/hooks";
 import toast from "react-hot-toast";
-import placeholderProfile from "@/assets/placeholderProfile.webp"
-import blogPlaceholderImage from "@/assets/blogPlaceholderImage.webp"
+import placeholderProfile from "@/assets/placeholderProfile.webp";
+import blogPlaceholderImage from "@/assets/blogPlaceholderImage.webp";
+
 interface Post {
   user: {
     userName: string;
@@ -33,7 +34,7 @@ interface Post {
   };
 }
 
-const hashvalue = ["#card", "#blog", "#react", "#nodejs"];
+const hashvalue = ["#card", "#blog", "#react", "#nodejs", "#blog", "#react", "#nodejs"];
 const baseURL = constant?.public_base_url;
 
 export default function Home() {
@@ -50,7 +51,7 @@ export default function Home() {
       setLoading(true);
       try {
         const response = await fetch(
-          `${baseURL}/api/blogs?pageNo=${pageNo}&limit=2`,
+          `${baseURL}/api/blogs?pageNo=${pageNo}&limit=10`,
           { method: "GET" }
         );
         const data = await response.json();
@@ -113,21 +114,20 @@ export default function Home() {
         {posts.map((post) => (
           <Card
             key={post?.post?.id}
-            className="w-full max-w-2xl mx-auto flex items-center p-4 hover:shadow-lg transition-shadow"
-            style={{ height: "200px" }}
+            className="w-full max-w-2xl mx-auto flex flex-col sm:flex-row items-center p-4 hover:shadow-lg transition-shadow"
           >
             <Image
-              src={post?.post?.blog_pic || blogPlaceholderImage} // Use local placeholder
+              src={post?.post?.blog_pic || blogPlaceholderImage}
               alt="Blog Image"
-              width={150}
-              height={200}
-              className="w-1/3 h-full object-cover rounded-lg"
+              width={200}
+              height={150}
+              className="w-full sm:w-1/3 h-auto sm:h-full object-contain rounded-lg max-w-full"
             />
-            <div className="flex-1 pl-4">
+            <div className="flex-1 mt-2 sm:mt-0 sm:pl-4">
               <CardHeader>
                 <div className="flex items-center gap-3">
                   <Image
-                    src={post?.user?.profile_pic || placeholderProfile} // Use local placeholder
+                    src={post?.user?.profile_pic || placeholderProfile}
                     alt={`${post?.user?.userName}'s profile`}
                     width={40}
                     height={40}
@@ -141,15 +141,17 @@ export default function Home() {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="">
                 <CardTitle className="text-lg font-bold line-clamp-1">
                   {post?.post?.title}
                 </CardTitle>
-                <p className="text-gray-700 line-clamp-2">{post?.post?.content}</p>
+                <p className="text-gray-700 line-clamp-2">
+                {post?.post?.content}
+                </p>
               </CardContent>
-              <CardFooter>
+              <CardFooter className="mt-2 flex flex-wrap gap-2">
                 {hashvalue.map((hash) => (
-                  <div className="px-2" key={hash}>
+                  <div className="px-2 text-sm" key={hash}>
                     {hash}
                   </div>
                 ))}
