@@ -42,7 +42,7 @@ export const Header = () => {
   };
 
   return (
-    <header className="bg-[#164674] fixed w-full">
+    <header className="bg-[#164674] fixed w-full z-10">
     <div className="container w-full mx-auto flex justify-between items-center py-4 px-8">
       {/* Logo */}
       <div className="text-white text-2xl font-bold">
