@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import Image from "next/image";
 import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -49,7 +50,6 @@ const CreatePost = ({ params }: { params: { user_id: string } }) => {
     register,
     handleSubmit,
     formState: { errors },
-    setValue, // Used to programmatically set form values
   } = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
   });
@@ -167,7 +167,7 @@ const CreatePost = ({ params }: { params: { user_id: string } }) => {
                 onDrop={handleDrop}
               >
                 <Label className="block">Drag and drop an image here</Label>
-                {imageURL && <img src={imageURL} alt="Blog Image" className="mt-2 max-h-48 object-contain" />}
+                {imageURL && <Image src={imageURL} alt="Blog Image" className="mt-2 max-h-48 object-contain" />}
               </div>
 
               {/* Hashtags Input */}
