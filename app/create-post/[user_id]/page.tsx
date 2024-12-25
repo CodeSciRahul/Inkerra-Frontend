@@ -1,5 +1,6 @@
-"use client";
-import React, { useState } from "react";
+"use client"
+
+import React, { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,7 +11,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import Image from "next/image";
 import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -24,6 +24,8 @@ import { useAppDispatch } from "@/redux/hooks";
 import { removeUserInfo } from "@/redux/features/authSlice";
 import dynamic from "next/dynamic";  // Import dynamic for server-side rendering
 import { v4 as uuidv4 } from "uuid";  // For unique image keys
+import toMarkdown from "to-markdown";  // Import the HTML to Markdown converter
+
 
 const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });  // Disable SSR
 
@@ -38,8 +40,7 @@ const baseURL = constant?.public_base_url;
 
 const CreatePost = ({ params }: { params: { user_id: string } }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [editorContent, setEditorContent] = useState<string>('');
-  const [imageURL, setImageURL] = useState<string | null>(null); // Store image URL
+  const [editorContent, setEditorContent] = useState<string>('');  // Content of JoditEditor
   const [hashtags, setHashtags] = useState<string[]>([]);  // Store hashtags
   const router = useRouter();
   const user_id = params.user_id;
@@ -50,23 +51,22 @@ const CreatePost = ({ params }: { params: { user_id: string } }) => {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,  // We use setValue to manually update the content field in React Hook Form
   } = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
   });
 
-  // Handle image drop
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const files = e.dataTransfer.files;
-    if (files && files[0]) {
-      const file = files[0];
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImageURL(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  // handle config for JoditEditor
+  const config = useMemo(() => ({
+    uploader: {
+      insertImageAsBase64URI: true,
+      imagesExtensions: ['jpg', 'png', 'jpeg', 'svg', 'webp']
+    },
+    readonly: false,
+    height: 300,
+    toolbar: true,
+    buttons: ['bold', 'italic', 'underline', 'link', 'unlink', 'image']
+  }), []);
 
   // Handle hashtag input
   const handleAddHashtag = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -86,7 +86,8 @@ const CreatePost = ({ params }: { params: { user_id: string } }) => {
 
   // Form submission handler
   const onSubmit = async (values: FormSchema) => {
-    setIsSubmitting(!isSubmitting);
+    console.log("Form Submitted:", values);
+    setIsSubmitting(true);  // Set submitting state
     try {
       const response = await fetch(`${baseURL}/api/${user_id}`, {
         method: "POST",
@@ -96,13 +97,12 @@ const CreatePost = ({ params }: { params: { user_id: string } }) => {
         },
         body: JSON.stringify({
           ...values,
-          content: editorContent,
-          image: imageURL,  // Include the image URL
+          content: editorContent,  // Include the editor content
           hashtags,  // Include the hashtags array
         }),
       });
       const data = await response.json();
-      setIsSubmitting(false);
+      setIsSubmitting(false);  // Reset submitting state
       if (!response.ok) {
         if (response?.status === 401) {
           dispatch(removeUserInfo());
@@ -114,8 +114,20 @@ const CreatePost = ({ params }: { params: { user_id: string } }) => {
       router.push("/");
     } catch (error) {
       toast.error(`Error: ${error}`, { duration: 5000 });
-      setIsSubmitting(false);
+      setIsSubmitting(false);  // Reset submitting state
     }
+  };
+
+  // Update content field in React Hook Form on editor change
+  const handleEditorChange = (newContent: string) => {
+    console.log("Editor HTML content:", newContent);
+    
+    // Convert HTML content to Markdown
+    const markdownContent = toMarkdown(newContent);
+    console.log("Converted Markdown content:", markdownContent);
+  
+    setEditorContent(newContent); // Store raw HTML in state (if you want to keep the HTML version)
+    setValue("content", markdownContent); // Save Markdown formatted text in the form
   };
 
   return (
@@ -150,24 +162,10 @@ const CreatePost = ({ params }: { params: { user_id: string } }) => {
                 </Label>
                 <JoditEditor
                   value={editorContent}
-                  onChange={(newContent) => setEditorContent(newContent)}
-                  config={{
-                    readonly: false,
-                    height: 300,
-                    toolbar: true,  // Enabling the toolbar
-                  }}
+                  onChange={handleEditorChange}
+                  config={config}
                 />
                 {errors.content && <p className="text-red-500 text-sm mt-1">{errors.content.message}</p>}
-              </div>
-
-              {/* Drag-and-Drop Image Upload */}
-              <div
-                className="border-2 border-dashed p-4 rounded-md"
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={handleDrop}
-              >
-                <Label className="block">Drag and drop an image here</Label>
-                {imageURL && <Image src={imageURL} alt="Blog Image" className="mt-2 max-h-48 object-contain" />}
               </div>
 
               {/* Hashtags Input */}
