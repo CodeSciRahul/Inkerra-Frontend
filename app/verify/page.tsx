@@ -45,7 +45,6 @@ const VerifyUserfunction = () => {
           body: JSON.stringify(payload),
         });
         const data: loginResType = await response?.json();
-        console.log("fetched data", data);
         setisloading(false);
         if (!response.ok) {
           return toast.error(`${data?.message}`, { duration: 5000 });

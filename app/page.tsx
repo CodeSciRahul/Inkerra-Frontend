@@ -11,7 +11,6 @@ import {
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { constant } from "@/constant/constant";
-import { useAppSelector } from "@/redux/hooks";
 import toast from "react-hot-toast";
 import placeholderProfile from "@/assets/placeholderProfile.webp";
 import blogPlaceholderImage from "@/assets/blogPlaceholderImage.webp";
@@ -43,9 +42,6 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [noMoreData, setNoMoreData] = useState(false);
   const router = useRouter();
-
-  const user = useAppSelector((state) => state?.auth?.data);
-
   useEffect(() => {
     const getAlldata = async () => {
       setLoading(true);
@@ -103,7 +99,7 @@ export default function Home() {
             No posts have been added yet—why not be the first to create and share your story?
           </h1>
           <div className="mt-3">
-            <Button onClick={() => router.push(`/create-post/${user?.id}`)}>
+            <Button onClick={() => router.push(`/create-post`)}>
               Create Post
             </Button>
           </div>
@@ -117,7 +113,7 @@ export default function Home() {
             className="w-full max-w-2xl mx-auto flex flex-col sm:flex-row items-center p-4 hover:shadow-lg transition-shadow"
           >
             <Image
-              src={post?.post?.blog_pic || blogPlaceholderImage}
+              src={post?.post?.blog_pic ? post?.post?.blog_pic : blogPlaceholderImage}
               alt="Blog Image"
               width={200}
               height={150}
@@ -132,6 +128,7 @@ export default function Home() {
                     width={40}
                     height={40}
                     className="w-10 h-10 rounded-full object-cover"
+                    onClick={() => router.push(`/profile/${post?.user?.userName}`)}
                   />
                   <div>
                     <p className="text-md font-semibold">{post?.user?.userName}</p>
@@ -141,7 +138,7 @@ export default function Home() {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="">
+              <CardContent onClick={() => router.push(`/blog/${post?.user?.userName}/${post?.post?.title}`)}>
                 <CardTitle className="text-lg font-bold line-clamp-1">
                   {post?.post?.title}
                 </CardTitle>

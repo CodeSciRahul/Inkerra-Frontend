@@ -19,10 +19,10 @@ export default function RootLayout({
     <StoreProvider>
       <html lang="en">
         <body
-          className={` antialiased bg-gray-100 `}
+          className={`antialiased bg-gray-100 `}
         >
           <Header />
-         <div className="pt-16">{children}</div>
+         <div className="pt-16 pb-16">{children}</div>
           <BottomNavbar />
           <Toaster />
         </body>

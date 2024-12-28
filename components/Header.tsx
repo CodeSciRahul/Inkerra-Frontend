@@ -20,12 +20,6 @@ export const Header = () => {
   const token = useAppSelector((state) => state.auth.data);
   const user = useAppSelector((state) => state.auth.data);
 
-  const handleCreatePost = (user_id: number | undefined) => {
-    if (user_id) {
-      router.push(`/create-post/${user_id}`);
-    }
-  };
-
   useEffect(() => {
     dispatch(hydrateUserInfoFromLocalStorage());
   }, [router,dispatch])
@@ -35,10 +29,6 @@ export const Header = () => {
     dispatch(removeUserInfo());
     toast.success("Logout successfully", { duration: 5000 });
     router.push("/");
-  };
-
-  const handleProfile = (user_id: number | undefined) => {
-    router.push(`/user-profile/${user_id}`);
   };
 
   return (
@@ -66,7 +56,7 @@ export const Header = () => {
             <Button
               variant="link"
               className="text-white flex gap-2 hover:text-gray-300 transition"
-              onClick={() => handleCreatePost(user?.id)}
+              onClick={() => router.push(`/create-post`)}
             >
               <FaSignsPost className="text-[1.4rem] lg:text-[1rem]" />
               <p className="hidden lg:flex">Create Post</p> 
@@ -74,7 +64,7 @@ export const Header = () => {
             <Button
               variant="link"
               className="text-white flex gap-2 hover:text-gray-300 transition"
-              onClick={() => handleProfile(user?.id)}
+              onClick={() => router.push(`/user-profile/${user?.userName}`) }
             >
               <FaUser className="text-[1.4rem] lg:text-[1rem]"/>
               <p className="hidden lg:flex">Profile</p> 
