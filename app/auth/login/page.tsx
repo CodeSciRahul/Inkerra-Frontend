@@ -25,7 +25,7 @@ import {
 import type { loginResType } from "@/interfaceType/authType";
 import { constant } from "@/constant/constant";
 import SendEmailDialog from "@/components/SendEmailDialog";
-
+import SEO from "@/components/SEO";
 
 const formSchema = z.object({
   userName: z.string({ message: "Please enter a valid email" }),
@@ -34,10 +34,7 @@ const formSchema = z.object({
     .min(6, { message: "Password must be at least 6 characters" }),
 });
 
-
 const baseURL = constant?.public_base_url;
-
-
 
 const LoginForm: React.FC = () => {
   const router = useRouter();
@@ -85,6 +82,11 @@ const LoginForm: React.FC = () => {
 
   return (
     <>
+      <SEO
+        title="Login"
+        description="Log in to Inkerra to access your account, create blog posts, and explore engaging content."
+      />
+
       {/* login form */}
       <div className="max-w-lg mx-auto my-4 p-8 bg-white shadow-md rounded-md">
         <h1 className="text-2xl font-bold mb-6">Login</h1>
@@ -126,7 +128,7 @@ const LoginForm: React.FC = () => {
                     />
                   </FormControl>
                   <Link
-                  href="#"
+                    href="#"
                     className=" mt-[-0.5rem] inline-block text-sm text-muted-foreground cursor-pointer"
                     onClick={() => setisResetPasswordOpen(!isResetPasswordOpen)}
                   >
@@ -180,7 +182,7 @@ const LoginForm: React.FC = () => {
           purpose="verification-email"
         />
       )}
-      
+
       {isResetPasswordOpen && (
         <SendEmailDialog
           isOpen={isResetPasswordOpen}

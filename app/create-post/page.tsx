@@ -26,6 +26,7 @@ import dynamic from "next/dynamic";
 import { v4 as uuidv4 } from "uuid";
 import toMarkdown from "to-markdown";
 import Image from "next/image";
+import SEO from "@/components/SEO";
 
 const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 
@@ -143,6 +144,10 @@ const CreatePost = () => {
 
   return (
     <ProtectedRoute>
+      <SEO
+        title="Create a New Post"
+        description="Share your thoughts with the world. Create and publish a new blog post today!"
+      />
       <div className="flex justify-center items-center p-4">
         <Card className="w-full max-w-3xl bg-white shadow-md rounded-lg">
           <CardHeader>
@@ -201,7 +206,7 @@ const CreatePost = () => {
                 <Input type="file" accept="image/*" onChange={handleImageChange} className="mt-2" />
                 {imagePreview && (
                   <div className="mt-2">
-                    <Image src={imagePreview} alt="Preview" className="w-32 h-32 object-cover rounded-md" />
+                    <Image src={imagePreview} width={200} height={200} alt="Preview" className="object-cover rounded-sm" />
                   </div>
                 )}
               </div>

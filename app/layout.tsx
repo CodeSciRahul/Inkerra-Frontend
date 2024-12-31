@@ -6,8 +6,9 @@ import { Toaster } from "react-hot-toast";
 import { BottomNavbar } from "@/components/BottomNavbar";
 
 export const metadata: Metadata = {
-  title: "Blog App",
-  description: "it is an Blog App",
+  title: "Inkerra - Discover and Share Blogs",
+  description:
+    "Welcome to Inkerra, the ultimate blogging platform. Create, share, and explore engaging content from writers across the globe.",
 };
 
 export default function RootLayout({
@@ -18,6 +19,10 @@ export default function RootLayout({
   return (
     <StoreProvider>
       <html lang="en">
+      <head>
+          {/* Favicon */}
+          {/* <link rel="icon" href="/favicon.ico" /> */}
+        </head>
         <body
           className={`antialiased bg-gray-100 `}
         >

@@ -36,7 +36,7 @@ export const Header = () => {
     <div className="container w-full mx-auto flex justify-between items-center py-4 px-8">
       {/* Logo */}
       <div className="text-white text-2xl font-bold">
-        Logo
+        Inkerra
       </div>
   
       {/* Desktop Links */}
