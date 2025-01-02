@@ -59,6 +59,7 @@ const ProfilePage = ({ params: { user_id } }: ProfilePageProps) => {
     const fetchUser = async () => {
       try {
         const res = await fetch(`${base_url}/api/user/${userName}`, {
+          headers: { Authorization: `Bearer ${token}` },
           cache: "no-store",
         });
         if (!res.ok) throw new Error("Failed to fetch user data");
@@ -76,7 +77,7 @@ const ProfilePage = ({ params: { user_id } }: ProfilePageProps) => {
       setUser(currentUser);
       setUpdatedUser(currentUser);
     }
-  }, [userName, currentUser]);
+  }, [userName, token, currentUser]);
 
   useEffect(() => {
     const fetchBlogs = async () => {
