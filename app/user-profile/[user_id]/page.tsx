@@ -1,12 +1,10 @@
 "use client";
-import { Metadata } from "next";
 import Image from "next/image";
 import { constant } from "@/constant/constant";
 import toast from "react-hot-toast";
 import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { hydrateUserInfoFromLocalStorage } from "@/redux/features/authSlice";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 
 interface UserProfile {
@@ -28,6 +26,14 @@ interface UserProfile {
   updated_at: string;
 }
 
+interface Blog {
+  id: string;
+  title: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+}
+
 interface ProfilePageProps {
   params: { user_id: string };
 }
@@ -36,11 +42,11 @@ const base_url = constant?.public_base_url;
 
 const ProfilePage = ({ params: { user_id } }: ProfilePageProps) => {
   const [user, setUser] = useState<UserProfile | null>(null);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [updatedUser, setUpdatedUser] = useState<UserProfile | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const dispatch = useAppDispatch();
-  const router = useRouter();
   const token = useAppSelector((state) => state.auth.data);
   const currentUser = useAppSelector((state) => state?.auth?.data);
   const userName = user_id.split("%20").join(" ");
@@ -70,7 +76,25 @@ const ProfilePage = ({ params: { user_id } }: ProfilePageProps) => {
       setUser(currentUser);
       setUpdatedUser(currentUser);
     }
-  }, [user_id, currentUser]);
+  }, [userName, currentUser]);
+
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const res = await fetch(`${base_url}/api/user/${userName}/blogs`, {
+          headers: { Authorization: `Bearer ${token}` },
+          cache: "no-store",
+        });
+        if (!res.ok) throw new Error("Failed to fetch blogs");
+        const data = await res.json();
+        setBlogs(data);
+      } catch (error) {
+        toast.error((error as Error).message);
+      }
+    };
+
+    fetchBlogs();
+  }, [userName, token]);
 
   const handleProfileUpdate = async () => {
     try {
@@ -121,7 +145,7 @@ const ProfilePage = ({ params: { user_id } }: ProfilePageProps) => {
   if (!user) return <div>Loading...</div>;
 
   return (
-    <div className=" bg-gray-100 flex justify-center px-4 sm:px-6 lg:px-8 mt-4">
+    <div className=" bg-gray-100 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 mt-4">
       <div className="w-full max-w-5xl bg-white rounded-lg shadow-md overflow-hidden">
         <header
           className="relative h-64 bg-cover bg-center"
@@ -190,7 +214,6 @@ const ProfilePage = ({ params: { user_id } }: ProfilePageProps) => {
             </div>
           </div>
         </header>
-
         <main className="p-6">
           <section className="mb-6">
             <h2 className="text-xl font-semibold mb-4">About</h2>
@@ -325,6 +348,25 @@ const ProfilePage = ({ params: { user_id } }: ProfilePageProps) => {
             )}
           </section>
         </main>
+      </div>
+
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold mb-4">Blogs</h2>
+        {blogs.length ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {blogs.map((blog) => (
+              <div key={blog.id} className="p-4 border rounded shadow">
+                <h3 className="text-lg font-semibold">{blog.title}</h3>
+                <p className="text-gray-600">{blog.content.slice(0, 100)}...</p>
+                <p className="text-sm text-gray-500">
+                  {new Date(blog.created_at).toLocaleDateString()}
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-700">No blogs available.</p>
+        )}
       </div>
     </div>
   );
