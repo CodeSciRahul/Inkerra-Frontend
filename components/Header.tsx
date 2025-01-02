@@ -90,14 +90,6 @@ export const Header = () => {
           </Button>
         )}
         </div>
-  
-        {/* Input Field */}
-        <div className="ml-4">
-          <Input
-            placeholder="Search..."
-            className="px-3 py-1 rounded-md text-white focus:outline-none"
-          />
-        </div>
       </div>
     </div>
     <Toaster />
