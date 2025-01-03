@@ -6,6 +6,7 @@ import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { hydrateUserInfoFromLocalStorage } from "@/redux/features/authSlice";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
+import { removeUserInfo } from "@/redux/features/authSlice";
 
 interface UserProfile {
   id: string;
@@ -62,8 +63,11 @@ const ProfilePage = ({ params: { user_id } }: ProfilePageProps) => {
           headers: { Authorization: `Bearer ${token}` },
           cache: "no-store",
         });
-        if (!res.ok) throw new Error("Failed to fetch user data");
         const data = await res.json();
+        if (!res.ok) {
+        return  res.status === 401 && dispatch(removeUserInfo());
+          toast.error(`${data?.message}`)
+        };
         setUser(data);
         setUpdatedUser(data);
       } catch (error) {
@@ -77,7 +81,7 @@ const ProfilePage = ({ params: { user_id } }: ProfilePageProps) => {
       setUser(currentUser);
       setUpdatedUser(currentUser);
     }
-  }, [userName, token, currentUser]);
+  }, [userName, token, currentUser, dispatch]);
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -86,16 +90,19 @@ const ProfilePage = ({ params: { user_id } }: ProfilePageProps) => {
           headers: { Authorization: `Bearer ${token}` },
           cache: "no-store",
         });
-        if (!res.ok) throw new Error("Failed to fetch blogs");
         const data = await res.json();
-        setBlogs(data);
+        if (!res.ok) {
+          toast.error(`${data?.message}`)
+          return res.status === 401 && dispatch(removeUserInfo());
+          };        
+          setBlogs(data);
       } catch (error) {
         toast.error((error as Error).message);
       }
     };
 
     fetchBlogs();
-  }, [userName, token]);
+  }, [userName, token, dispatch]);
 
   const handleProfileUpdate = async () => {
     try {
@@ -108,8 +115,12 @@ const ProfilePage = ({ params: { user_id } }: ProfilePageProps) => {
         },
         body: JSON.stringify(updatedUser),
       });
-      if (!res.ok) throw new Error("Failed to update profile");
-      toast.success("Profile updated successfully");
+      const data = await res.json()
+      if (!res.ok) {
+        toast.error(`${data?.message}`)
+        return res.status === 401 && dispatch(removeUserInfo());
+        };              
+        toast.success("Profile updated successfully");
       setUser(updatedUser);
       setIsEditing(false);
     } catch (error) {
@@ -135,9 +146,12 @@ const ProfilePage = ({ params: { user_id } }: ProfilePageProps) => {
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
-      if (!res.ok) throw new Error("Image upload failed");
       const data = await res.json();
-      setUpdatedUser({ ...updatedUser!, [field]: data.url });
+      if (!res.ok) {
+        toast.error(`${data?.message}`)
+        return res.status === 401 && dispatch(removeUserInfo());
+        };              
+        setUpdatedUser({ ...updatedUser!, [field]: data.url });
     } catch (error) {
       toast.error((error as Error).message);
     }
